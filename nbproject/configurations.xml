@@ -13,10 +13,12 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>LCD.S</itemPath>
-      <itemPath>ACD.s</itemPath>
       <itemPath>UART.s</itemPath>
       <itemPath>main.s</itemPath>
       <itemPath>config.s</itemPath>
+      <itemPath>ADC.s</itemPath>
+      <itemPath>servo.s</itemPath>
+      <itemPath>utilities.s</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -26,6 +28,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>//icnas2.cc.ic.ac.uk/mf919/YEAR_3/Microprocessors/microprocessorslab</Elem>
+    <Elem>.</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -37,7 +40,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>pk4hybrid</platformTool>
         <languageToolchain>pic-as</languageToolchain>
-        <languageToolchainVersion>2.36</languageToolchainVersion>
+        <languageToolchainVersion>2.32</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
