@@ -3,6 +3,11 @@
 
 global  LCD_Setup, LCD_Write_Message, LCD_Write_Hex, LCD_clear, LCD_shift, LCD_delay, LCD_Write_Hex_Dig
 global	LCD_Send_Byte_D
+
+extrn	RES0, RES1, RES2, RES3, ARG1H, ARG2H, ARG1L, ARG2L
+extrn	multiply_uneven, L1, M1, H1, ARG2
+    
+    
 psect	udata_acs   ; named variables in access ram
 LCD_cnt_l:	ds 1	; reserve 1 byte for variable LCD_cnt_l
 LCD_cnt_h:	ds 1	; reserve 1 byte for variable LCD_cnt_h
@@ -180,6 +185,40 @@ LCD_Hex_Nib_d:			; writes low nibble as hex character
 	addwf	LCD_tmp, W, A
 	call	LCD_Send_Byte_D ; write out ascii
 	return
+	
+;volt_conv:
+;	movff	ADRESH, ARG1H, A    ; high byte of ADC result
+;	movff	ADRESL, ARG1L, A    ; low byte of ADC result
+;;	movlw	0x04
+;;	movwf	ARG1H, A
+;;	movlw	0xD2
+;;	movwf	ARG1L, A
+;	movlw	0x41
+;	movwf	ARG2H, A	    ; high byte of conversion number
+;	movlw	0x8A
+;	movwf	ARG2L, A	    ; low byte of conversion number
+;	call	multiply	    ; result will be in RES0-3
+;	movf	RES3, W, A	    ;print highest non-zero nibble
+;	call	LCD_Write_Hex_Dig
+;	movlw	0x2E
+;	call	LCD_Send_Byte_D
+;	call	volt_decimals
+;	call	volt_decimals
+;	call	volt_decimals
+;	movlw	0x56
+;	call	LCD_Send_Byte_D
+;	return
+;volt_decimals:
+;	movff	RES2, H1, A
+;	movff	RES1, M1, A
+;	movff	RES0, L1, A
+;	movlw	0x0A
+;	movwf	ARG2, A
+;	call	multiply_uneven
+;	movf	RES3, W, A	    ;print highest non-zero nibble
+;	call	LCD_Write_Hex_Dig
+;	return
+;	
     end
 
 

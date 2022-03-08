@@ -1,6 +1,8 @@
 #include <xc.inc>
 
-global  ADC_Setup
+global  Servo_Setup, Create_Pulse
+    
+extrn   delay_x4us, delay_100us,delay_ms
     
 psect udata_acs
 RES0:	ds  1
@@ -14,7 +16,22 @@ Servo_Setup:
 	return
 
 Create_Pulse:
-	
+	movlw	0x01
+	movwf	PORTJ, A
+	movlw	25
+	call	delay_100us
+	movlw	0x00
+	movwf	PORTJ, A
+	movlw	255
+	call	delay_ms
+	movlw	0x01
+	movwf	PORTJ, A
+	movlw	10
+	call	delay_100us
+	movlw	0x00
+	movwf	PORTJ, A
+	movlw	255
+	call	delay_ms
 	return
     
 end
