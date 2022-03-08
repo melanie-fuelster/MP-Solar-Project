@@ -17,8 +17,36 @@ L1:	ds  1
 H1:	ds  1
 M1:	ds  1
 ARG2:	ds 1
+LCD_cnt_l:	ds 1	; reserve 1 byte for variable LCD_cnt_l
+LCD_cnt_h:	ds 1	; reserve 1 byte for variable LCD_cnt_h
+LCD_cnt_ms:	ds 1	; reserve 1 byte for ms counter
+LCD_tmp:	ds 1	; reserve 1 byte for temporary use
+LCD_counter:	ds 1	; reserve 1 byte for counting through nessage
     
 psect	utils_code, class=CODE
+    
+    ; ** a few delay routines below here as LCD timing can be quite critical ****
+delay_ms:		    ; delay given in ms in W
+	movwf	LCD_cnt_ms, A
+lcdlp2:	movlw	250	    ; 1 ms delay
+	call	LCD_delay_x4us	
+	decfsz	LCD_cnt_ms, A
+	bra	lcdlp2
+	return
+    
+delay_x4us:		    ; delay given in chunks of 4 microsecond in W
+	movwf	LCD_cnt_l, A	; now need to multiply by 16
+	swapf   LCD_cnt_l, F, A	; swap nibbles
+	movlw	0x0f	    
+	andwf	LCD_cnt_l, W, A ; move low nibble to W
+	movwf	LCD_cnt_h, A	; then to LCD_cnt_h
+	movlw	0xf0	    
+	andwf	LCD_cnt_l, F, A ; keep high nibble in LCD_cnt_l
+	call	LCD_delay
+	return
+
+
+
 	
 multiply:
 	MOVF ARG1L, W, A
