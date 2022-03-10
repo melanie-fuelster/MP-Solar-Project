@@ -13,25 +13,6 @@ delay_count:ds 1    ; reserve one byte for counter in the delay routine
 delaydelay_count:ds 1
 delayCubed_count:ds 1
 
-
-    
-    
-psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
-myArray:    ds 0x80 ; reserve 128 bytes for message data
-mySecretArray:    ds 0x80 ; reserve 128 bytes for message data
-
-psect	data    
-	; ******* myTable, data in programme memory, and its length *****
-myTable:
-	db	'H','e','l','l','o',' ','W','o','r','l','d','?',0x0a
-					; message, plus carriage return
-	myTable_l   EQU	13	; length of data
-	align	2
-mySecretTable:
-	db	'G','o','o','d','b','y','e',0x0a
-					; message, plus carriage return
-	mySecretTable_l   EQU	8	; length of data
-	align	2
     
 psect	code, abs	
 rst: 	org 0x0
@@ -48,7 +29,13 @@ setup:	bcf	CFGS	; point to Flash program memory
 
 	
 	; ******* Main programme ****************************************
-start: 	call	Create_Pulse
+start: 	
+	movlw	25
+	call	Create_Pulse
+	call	delay
+	movlw	10
+	call	Create_Pulse
+	call	delay
 	goto	start
 	
 	
@@ -78,4 +65,25 @@ delayCubed:
 	decfsz	delayCubed_count,A	
 	bra	delayCubed
 	return
+
+	
+	
+	
+;psect	udata_bank4 ; reserve data anywhere in RAM (here at 0x400)
+;myArray:    ds 0x80 ; reserve 128 bytes for message data
+;mySecretArray:    ds 0x80 ; reserve 128 bytes for message data
+;
+;psect	data    
+;	; ******* myTable, data in programme memory, and its length *****
+;myTable:
+;	db	'H','e','l','l','o',' ','W','o','r','l','d','?',0x0a
+;					; message, plus carriage return
+;	myTable_l   EQU	13	; length of data
+;	align	2
+;mySecretTable:
+;	db	'G','o','o','d','b','y','e',0x0a
+;					; message, plus carriage return
+;	mySecretTable_l   EQU	8	; length of data
+;	align	2	
+	
 	end	rst
