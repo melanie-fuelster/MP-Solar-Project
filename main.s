@@ -1,11 +1,12 @@
 #include <xc.inc>
 
 extrn	UART_Setup, UART_Transmit_Message  ; external uart subroutines
-extrn	LCD_Setup, LCD_Write_Message, LCD_Write_Hex, LCD_clear, LCD_shift, LCD_delay, LCD_Send_Byte_D , LCD_Write_Hex_Dig; external LCD subroutines
+extrn	LCD_Setup, LCD_Write_Message, LCD_Write_Hex, LCD_clear, LCD_shift, LCD_Send_Byte_D , LCD_Write_Hex_Dig; external LCD subroutines
 extrn	ADC_Setup, ADC_Read 	   ; external ADC subroutines
 extrn	RES0, RES1, RES2, RES3, ARG1H, ARG2H, ARG1L, ARG2L, L1, M1, H1, ARG2
 extrn	multiply, multiply_uneven
 extrn   Servo_Setup,Create_Pulse
+extrn	delay_x4us, delay_100us, delay_ms, delay_250ns
 	
 psect	udata_acs   ; reserve data space in access ram
 counter:    ds 1    ; reserve one byte for a counter variable
@@ -32,10 +33,12 @@ setup:	bcf	CFGS	; point to Flash program memory
 start: 	
 	movlw	25
 	call	Create_Pulse
-	call	delay
+	movlw	0xff
+	call	delay_ms
 	movlw	10
 	call	Create_Pulse
-	call	delay
+	movlw	0xff
+	call	delay_ms
 	goto	start
 	
 	
