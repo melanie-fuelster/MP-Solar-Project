@@ -1,10 +1,10 @@
 #include <xc.inc>
 
 extrn	UART_Setup, UART_Transmit_Message  ; external uart subroutines
-extrn	LCD_Setup, LCD_Write_Message, LCD_Write_Hex, LCD_clear, LCD_shift, LCD_delay ; external LCD subroutines
-extrn	ADC_Setup, ADC_Read, multiply		   ; external ADC subroutines
-extrn	RES0, RES1, RES2, RES3, ARG1H, ARG2H, ARG1L, ARG2L, LCD_Write_Hex_Dig
-extrn	multiply_uneven, L1, M1, H1, ARG2, LCD_Send_Byte_D
+extrn	LCD_Setup, LCD_Write_Message, LCD_Write_Hex, LCD_clear, LCD_shift, LCD_delay, LCD_Send_Byte_D , LCD_Write_Hex_Dig; external LCD subroutines
+extrn	ADC_Setup, ADC_Read 	   ; external ADC subroutines
+extrn	RES0, RES1, RES2, RES3, ARG1H, ARG2H, ARG1L, ARG2L, L1, M1, H1, ARG2
+extrn	multiply, multiply_uneven
 extrn   Servo_Setup,Create_Pulse
 	
 psect	udata_acs   ; reserve data space in access ram
@@ -53,44 +53,9 @@ start: 	call	Create_Pulse
 	
 	
 
-;	
-;measure_loop:
-;	call	ADC_Read
-; 	movf	ADRESH, W, A
-;	call	LCD_Write_Hex
-; 	movf	ADRESL, W, A
-; 	call	LCD_Write_Hex
-;	call	LCD_shift
-;	;;; testing 8x8 multiplication
-;	call	volt_conv
-;;	movf	RES3, W, A
-;;	call	LCD_Write_Hex_Dig
-;;	movf	RES2, W, A
-;;	call	LCD_Write_Hex_Dig
-;;	movf	RES1, W, A
-;;	call	LCD_Write_Hex_Dig
-;;	movf	RES0, W, A
-;;	call	LCD_Write_Hex_Dig
-;	;;;
-;	call	LCD_delay
-;	call	LCD_delay
-;	call	LCD_delay
-;	call	LCD_delay
-;	call	LCD_clear
-;	goto	measure_loop		; goto current line in code
-;
-;;	call	LCD_shift
-;;	movlw	myTable_l	; output message to LCD
-;;	addlw	0xff		; don't send the final carriage return to LCD
-;;	lfsr	2, myArray
-;;	call	LCD_Write_Message
-;	
-;;	call	delay
-;;	call	LCD_clear
-;	goto	$		; goto current line in code
-
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+			   ;;;; BIG DELAY ROUTINE ;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
 delay:
 	movlw	0xff
 	movwf	delay_count,A	    ;store 0xff in 0x02 for delay

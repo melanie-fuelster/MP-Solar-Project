@@ -2,10 +2,9 @@
 
 global  Servo_Setup, Create_Pulse
     
-extrn   delay_x4us, delay_100us,delay_ms
+extrn   delay_x4us, delay_100us, delay_ms
     
 psect udata_acs
-RES0:	ds  1
 
 psect	servo_code, class=CODE
     
@@ -16,6 +15,7 @@ Servo_Setup:
 	return
 
 Create_Pulse:
+   
 	movlw	0x01
 	movwf	PORTJ, A
 	movlw	25

@@ -1,8 +1,12 @@
 #include <xc.inc>
 
-global delay_x4us, delay_100us, delay_ms
-;global	RES0, RES1, RES2, RES3, ARG1H, ARG2H, ARG1L, ARG2L
-;global	L1, M1, H1, ARG2.  multiply, multiply_uneven, 
+global delay_x4us, delay_100us, delay_ms, delay_250ns
+global  multiply, multiply_uneven,volt_display
+global	ARG1H,ARG2H,ARG1L,ARG2L,L1,H1,M1,ARG2, RES0, RES1, RES2, RES3
+
+extrn	LCD_Write_Hex, LCD_Send_Byte_D
+extrn	LCD_clear, LCD_shift, LCD_delay, LCD_Write_Hex_Dig
+extrn	ADC_Read
     
 psect udata_acs
 RES0:	ds  1
@@ -17,23 +21,36 @@ L1:	ds  1
 H1:	ds  1
 M1:	ds  1
 ARG2:	ds 1
+    
 cnt_l:	ds 1	; reserve 1 byte for variable cnt_l
 cnt_h:	ds 1	; reserve 1 byte for variable cnt_h
 cnt_ms:	ds 1	; reserve 1 byte for ms counter
+cnt_100us:ds 1	; reserve 1 byte for 100us counter
 tmp:	ds 1	; reserve 1 byte for temporary use
 counter:	ds 1	; reserve 1 byte for counting through nessage
     
 psect	utils_code, class=CODE
     
-    ; ** a few delay routines below here as LCD timing can be quite critical ****
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+			    ;;;; DELAY ROUTINES ;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+    
 delay_ms:		    ; delay given in ms in W
 	movwf	cnt_ms, A
-lcdlp2:	movlw	250	    ; 1 ms delay
+msloop:	movlw	250	    ; 1 ms delay
 	call	delay_x4us	
 	decfsz	cnt_ms, A
-	bra	lcdlp2
+	bra	msloop
 	return
-    
+	
+delay_100us:		    ; delay given in ms in W
+	movwf	cnt_100us, A			    ; USING SAME STORAGE VARIABLE AS IN FUNCTIONS ABOVE!! PLEASE CHANGE
+usloop:	movlw	25	    ; 0.1 ms delay
+	call	delay_x4us	
+	decfsz	cnt_100us, A
+	bra	usloop
+	return 
+	
 delay_x4us:		    ; delay given in chunks of 4 microsecond in W
 	movwf	cnt_l, A	; now need to multiply by 16
 	swapf   cnt_l, F, A	; swap nibbles
@@ -42,23 +59,19 @@ delay_x4us:		    ; delay given in chunks of 4 microsecond in W
 	movwf	cnt_h, A	; then to cnt_h
 	movlw	0xf0	    
 	andwf	cnt_l, F, A ; keep high nibble in cnt_l
-	call	LCD_delay
+	call	delay_250ns
 	return
-delay_100us:		    ; delay given in ms in W
-	movwf	cnt_ms, A			    ; USING SAME STORAGE VARIABLE AS IN FUNCTIONS ABOVE!! PLEASE CHANGE
-lp2:	movlw	25	    ; 0.1 ms delay
-	call	delay_x4us	
-	decfsz	cnt_ms, A
-	bra	lp2
-	return
-
-LCD_delay:			; delay routine	4 instruction loop == 250ns	    
-	movlw 	0x00		; W=0
-lcdlp1:	decf 	cnt_l, F, A	; no carry when 0x00 -> 0xff
-	subwfb 	cnt_h, F, A	; no carry when 0x00 -> 0xff
-	bc 	lcdlp1		; carry, then loop again
-	return		
 	
+delay_250ns:			; delay routine	4 instruction loop == 250ns	    
+	movlw 	0x00		; W=0
+nsloop:	decf 	cnt_l, F, A	; no carry when 0x00 -> 0xff
+	subwfb 	cnt_h, F, A	; no carry when 0x00 -> 0xff
+	bc 	nsloop		; carry, then loop again
+	return		
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+			    ;;;; ARITHMETIC ;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 multiply:
 	MOVF ARG1L, W, A
 	MULWF ARG2L, A ; ARG1L * ARG2L-> 
@@ -117,4 +130,51 @@ multiply_uneven:
 	ADDWFC RES3, F, A ; 
 
 	return
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+			    ;;;; VOLT CONVERTER ;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+volt_conv:
+	movff	ADRESH, ARG1H, A    ; high byte of ADC result
+	movff	ADRESL, ARG1L, A    ; low byte of ADC result
+	movlw	0x41
+	movwf	ARG2H, A	    ; high byte of conversion number
+	movlw	0x8A
+	movwf	ARG2L, A	    ; low byte of conversion number
+	call	multiply	    ; result will be in RES0-3
+	movf	RES3, W, A	    ;print highest non-zero nibble
+	call	LCD_Write_Hex_Dig
+	movlw	0x2E
+	call	LCD_Send_Byte_D
+	call	volt_decimals
+	call	volt_decimals
+	call	volt_decimals
+	movlw	0x56
+	call	LCD_Send_Byte_D
+	return
+volt_decimals:
+	movff	RES2, H1, A
+	movff	RES1, M1, A
+	movff	RES0, L1, A
+	movlw	0x0A
+	movwf	ARG2, A
+	call	multiply_uneven
+	movf	RES3, W, A	    ;print highest non-zero nibble
+	call	LCD_Write_Hex_Dig
+	return
+	
+volt_display:
+	call	ADC_Read
+ 	movf	ADRESH, W, A
+	call	LCD_Write_Hex
+ 	movf	ADRESL, W, A
+ 	call	LCD_Write_Hex
+	call	LCD_shift
+	call	volt_conv
+	call	LCD_delay
+	call	LCD_delay
+	call	LCD_delay
+	call	LCD_delay
+	call	LCD_clear
+	goto	volt_display		; NEED TO CHANGE! WILL GET STUCK IN LOOP! --> use timer interrupt ?
 end
