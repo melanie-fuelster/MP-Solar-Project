@@ -1,6 +1,6 @@
 #include <xc.inc>
 
-global delay_x4us, delay_100us, delay_ms, delay_250ns
+global delay_x4us, delay_100us, delay_ms, delay_250ns, delay_12us
 global  multiply, multiply_uneven,volt_display
 global	ARG1H,ARG2H,ARG1L,ARG2L,L1,H1,M1,ARG2, RES0, RES1, RES2, RES3
 
@@ -26,6 +26,7 @@ cnt_l:	ds 1	; reserve 1 byte for variable cnt_l
 cnt_h:	ds 1	; reserve 1 byte for variable cnt_h
 cnt_ms:	ds 1	; reserve 1 byte for ms counter
 cnt_100us:ds 1	; reserve 1 byte for 100us counter
+cnt_12us:ds 1	; reserve 1 byte for 100us counter
 tmp:	ds 1	; reserve 1 byte for temporary use
 counter:	ds 1	; reserve 1 byte for counting through nessage
     
@@ -51,6 +52,13 @@ usloop:	movlw	25	    ; 0.1 ms delay
 	bra	usloop
 	return 
 	
+delay_12us:		    ; delay given in ms in W
+	movwf	cnt_12us, A			    ; USING SAME STORAGE VARIABLE AS IN FUNCTIONS ABOVE!! PLEASE CHANGE
+usloop12:movlw	3	    ; 0.1 ms delay
+	call	delay_x4us	
+	decfsz	cnt_12us, A
+	bra	usloop12
+	return 	
 delay_x4us:		    ; delay given in chunks of 4 microsecond in W
 	movwf	cnt_l, A	; now need to multiply by 16
 	swapf   cnt_l, F, A	; swap nibbles

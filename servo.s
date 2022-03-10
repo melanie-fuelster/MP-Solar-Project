@@ -1,8 +1,8 @@
 #include <xc.inc>
 
-global  Servo_Setup, Create_Pulse
+global  Servo_Setup, Create_Pulse, Create_small_Pulse
     
-extrn   delay_x4us, delay_100us, delay_ms
+extrn   delay_x4us, delay_100us, delay_ms,delay_12us
     
 psect udata_acs
 pulse_width:    ds 1 
@@ -24,7 +24,16 @@ Create_Pulse:
     movlw   0x00
     movwf   PORTJ, A    ;end of pulse
 return
-	
+
+Create_small_Pulse:
+    movwf   pulse_width, A
+    movlw   0x01	
+    movwf   PORTJ, A    ;start of pulse
+    movff   pulse_width, WREG, A
+    call    delay_12us ;define pulse length
+    movlw   0x00
+    movwf   PORTJ, A    ;end of pulse
+return
 	
 Test_Pulse:
 	movlw	0x01	

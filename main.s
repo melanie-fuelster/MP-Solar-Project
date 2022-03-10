@@ -4,8 +4,8 @@ extrn	UART_Setup, UART_Transmit_Message  ; external uart subroutines
 extrn	LCD_Setup, LCD_Write_Message, LCD_Write_Hex, LCD_clear, LCD_shift, LCD_Send_Byte_D , LCD_Write_Hex_Dig; external LCD subroutines
 extrn	ADC_Setup, ADC_Read 	   ; external ADC subroutines
 extrn	RES0, RES1, RES2, RES3, ARG1H, ARG2H, ARG1L, ARG2L, L1, M1, H1, ARG2
-extrn	multiply, multiply_uneven
-extrn   Servo_Setup,Create_Pulse
+extrn	multiply, multiply_uneven, volt_display
+extrn   Servo_Setup, Create_Pulse, Create_small_Pulse
 extrn	delay_x4us, delay_100us, delay_ms, delay_250ns
 	
 psect	udata_acs   ; reserve data space in access ram
@@ -13,6 +13,8 @@ counter:    ds 1    ; reserve one byte for a counter variable
 delay_count:ds 1    ; reserve one byte for counter in the delay routine
 delaydelay_count:ds 1
 delayCubed_count:ds 1
+incr:	ds 1
+decr:	ds 1
 
     
 psect	code, abs	
@@ -30,19 +32,43 @@ setup:	bcf	CFGS	; point to Flash program memory
 
 	
 	; ******* Main programme ****************************************
-start: 	
-	movlw	25
-	call	Create_Pulse
-	movlw	0xff
-	call	delay_ms
-	movlw	10
-	call	Create_Pulse
-	movlw	0xff
-	call	delay_ms
-	goto	start
-	
-	
-
+start:	
+    call volt_display
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+			   ;;;; SWEEPING SERVO ;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  	
+;start: 	
+;    movlw   0x32
+;    movwf   incr, A
+;    call    increment_loop
+;    movlw   0xe1
+;    movwf   decr, A
+;    call    decrement_loop
+;    goto    start
+;    
+;    
+;increment_loop:
+;	movff	incr, WREG, A
+;	call	Create_small_Pulse
+;	movlw	0x0a
+;	call	delay_ms
+;	incf	incr, A
+;	movlw	0xe1	    ;0x1b=27 (Hex) max servo range
+;	cpfsgt	incr, A
+;	goto	increment_loop
+;	return
+;decrement_loop:
+;	movff	decr, WREG, A
+;	call	Create_small_Pulse
+;	movlw	0x0a
+;	call	delay_ms
+;	decf	decr, A
+;	movlw	0x32	    ;0x06=6 (Hex) max servo range
+;	cpfslt	decr, A
+;	goto	decrement_loop
+;	return
+					   			   
+			   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 			   ;;;; BIG DELAY ROUTINE ;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
