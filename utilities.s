@@ -179,10 +179,38 @@ volt_display:
  	call	LCD_Write_Hex
 	call	LCD_shift
 	call	volt_conv
+;	movlw	0x0a
+;	call	delay_x4us
 	call	LCD_delay
 	call	LCD_delay
 	call	LCD_delay
+	call	LCD_delay
+	call	LCD_delay
+	call	LCD_delay
+	call	LCD_delay
+
 	call	LCD_delay
 	call	LCD_clear
 	goto	volt_display		; NEED TO CHANGE! WILL GET STUCK IN LOOP! --> use timer interrupt ?
+	
+	
+	
+;ADC1H
+;ADC1L
+;ADC2H
+;ADC2L
+;	
+;ADC_diff:
+;	call	ADC_Read
+; 	movf	ADRESH, W, A
+;	movwf	ADC1H, A
+; 	movf	ADRESL, W, A
+;	movwf	ADC1L, A
+;	
+;	call	ADC_Read
+; 	movf	ADRESH, W, A
+;	movwf	ADC2H, A
+; 	movf	ADRESL, W, A
+;	movwf	ADC2L, A
+	
 end

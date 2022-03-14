@@ -39,34 +39,37 @@ start:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  	
 ;start: 	
 ;    movlw   0x32
+;;    call    Create_small_Pulse
+;;    movlw   0x0a
+;;    call    delay_ms
 ;    movwf   incr, A
 ;    call    increment_loop
 ;    movlw   0xe1
 ;    movwf   decr, A
 ;    call    decrement_loop
 ;    goto    start
-;    
-;    
-;increment_loop:
-;	movff	incr, WREG, A
-;	call	Create_small_Pulse
-;	movlw	0x0a
-;	call	delay_ms
-;	incf	incr, A
-;	movlw	0xe1	    ;0x1b=27 (Hex) max servo range
-;	cpfsgt	incr, A
-;	goto	increment_loop
-;	return
-;decrement_loop:
-;	movff	decr, WREG, A
-;	call	Create_small_Pulse
-;	movlw	0x0a
-;	call	delay_ms
-;	decf	decr, A
-;	movlw	0x32	    ;0x06=6 (Hex) max servo range
-;	cpfslt	decr, A
-;	goto	decrement_loop
-;	return
+    
+    
+increment_loop:
+	movff	incr, WREG, A
+	call	Create_small_Pulse
+	movlw	0x0a
+	call	delay_ms
+	incf	incr, A
+	movlw	0xe1	    ;0x1b=27 (Hex) max servo range
+	cpfsgt	incr, A
+	goto	increment_loop
+	return
+decrement_loop:
+	movff	decr, WREG, A
+	call	Create_small_Pulse
+	movlw	0x0a
+	call	delay_ms
+	decf	decr, A
+	movlw	0x32	    ;0x06=6 (Hex) max servo range
+	cpfslt	decr, A
+	goto	decrement_loop
+	return
 					   			   
 			   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
