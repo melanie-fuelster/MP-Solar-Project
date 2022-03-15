@@ -2,7 +2,7 @@
 
 extrn	UART_Setup, UART_Transmit_Message  ; external uart subroutines
 extrn	LCD_Setup, LCD_Write_Message, LCD_Write_Hex, LCD_clear, LCD_shift, LCD_Send_Byte_D , LCD_Write_Hex_Dig; external LCD subroutines
-extrn	ADC_Setup, ADC_Read 	   ; external ADC subroutines
+extrn	ADC_Setup, ADC_Read, ADC_diff_setup 	   ; external ADC subroutines
 extrn	RES0, RES1, RES2, RES3, ARG1H, ARG2H, ARG1L, ARG2L, L1, M1, H1, ARG2
 extrn	multiply, multiply_uneven, volt_display
 extrn   Servo_Setup, Create_Pulse, Create_small_Pulse
@@ -26,7 +26,8 @@ setup:	bcf	CFGS	; point to Flash program memory
 	bsf	EEPGD 	; access Flash program memory
 	call	UART_Setup	; setup UART
 	call	LCD_Setup	; setup UART
-	call	ADC_Setup	; setup ADC
+	;call	ADC_Setup	; setup ADC
+	call	ADC_diff_setup
 	call	Servo_Setup
 	goto	start
 
