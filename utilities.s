@@ -157,6 +157,15 @@ volt_conv:
 	movwf	sign, A
 	swapf	sign, f, A	    ; store higher nibble of high byte in sign
 	
+	btfsc	sign, 0, A
+	call	subtraction
+	
+	movf	ARG1H, W, A
+	call	LCD_Write_Hex
+ 	movf	ARG1L, W, A
+ 	call	LCD_Write_Hex
+	call	LCD_shift
+	
 	movlw	0x41
 	movwf	ARG2H, A	    ; high byte of conversion number
 	movlw	0x8A
@@ -182,17 +191,15 @@ volt_decimals:
 	movf	RES3, W, A	    ;print highest non-zero nibble
 	call	LCD_Write_Hex_Dig
 	return
-	
+
 volt_display:
 	call	ADC_Read
- 	movf	ADRESH, W, A
-	call	LCD_Write_Hex
- 	movf	ADRESL, W, A
- 	call	LCD_Write_Hex
-	call	LCD_shift
+; 	movf	ADRESH, W, A
+;	call	LCD_Write_Hex
+; 	movf	ADRESL, W, A
+; 	call	LCD_Write_Hex
+;	call	LCD_shift
 	call	volt_conv
-;	movlw	0x0a
-;	call	delay_x4us
 	call	LCD_delay
 	call	LCD_delay
 	call	LCD_delay
@@ -206,23 +213,13 @@ volt_display:
 	goto	volt_display		; NEED TO CHANGE! WILL GET STUCK IN LOOP! --> use timer interrupt ?
 	
 	
-	
-;ADC1H
-;ADC1L
-;ADC2H
-;ADC2L
-;	
-;ADC_diff:
-;	call	ADC_Read
-; 	movf	ADRESH, W, A
-;	movwf	ADC1H, A
-; 	movf	ADRESL, W, A
-;	movwf	ADC1L, A
-;	
-;	call	ADC_Read
-; 	movf	ADRESH, W, A
-;	movwf	ADC2H, A
-; 	movf	ADRESL, W, A
-;	movwf	ADC2L, A
+subtraction:
+	movff	ARG1L, WREG, A
+	sublw	0xff
+	movwf	ARG1L, A
+	movlw	0x00
+	movwf	ARG1H, A
+	return
+
 	
 end
