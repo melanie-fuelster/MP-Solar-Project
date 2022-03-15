@@ -29,6 +29,9 @@ cnt_100us:ds 1	; reserve 1 byte for 100us counter
 cnt_12us:ds 1	; reserve 1 byte for 100us counter
 tmp:	ds 1	; reserve 1 byte for temporary use
 counter:	ds 1	; reserve 1 byte for counting through nessage
+sign:	ds 1	; sign bit from AD differential
+diff_reading: ds 1
+    
     
 psect	utils_code, class=CODE
     
@@ -140,11 +143,20 @@ multiply_uneven:
 	return
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-			    ;;;; VOLT CONVERTER ;;;;;;
+			    ;;;; VOLT DIFF CONVERTER ;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 volt_conv:
-	movff	ADRESH, ARG1H, A    ; high byte of ADC result
 	movff	ADRESL, ARG1L, A    ; low byte of ADC result
+	movff	ADRESH, diff_reading, A    ; high byte of ADC result
+	movlw	00001111B
+	andwf	diff_reading, W, A
+	movwf	ARG1H, A		; store lower nibble of high byte in ARG1H
+	
+	movlw	11110000B
+	andwf	diff_reading, W, A
+	movwf	sign, A
+	swapf	sign, f, A	    ; store higher nibble of high byte in sign
+	
 	movlw	0x41
 	movwf	ARG2H, A	    ; high byte of conversion number
 	movlw	0x8A
