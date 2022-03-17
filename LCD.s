@@ -170,7 +170,7 @@ LCD_shift:
 	call	LCD_delay_x4us
 	return
 	
-LCD_Write_Hex_Dig:			; Writes byte stored in W as hex
+LCD_Write_Hex_Dig:			; Writes lower nibble stored in W as hex
 	movwf	LCD_hex_tmp, A
 	swapf	LCD_hex_tmp, W, A	; high nibble first
 	movf	LCD_hex_tmp, W, A	; then low nibble

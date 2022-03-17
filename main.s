@@ -7,6 +7,7 @@ extrn	RES0, RES1, RES2, RES3, ARG1H, ARG2H, ARG1L, ARG2L, L1, M1, H1, ARG2
 extrn	multiply, multiply_uneven, volt_display
 extrn   Servo_Setup, Create_Pulse, Create_small_Pulse
 extrn	delay_x4us, delay_100us, delay_ms, delay_250ns
+extrn   move_servo
 	
 psect	udata_acs   ; reserve data space in access ram
 counter:    ds 1    ; reserve one byte for a counter variable
@@ -34,7 +35,9 @@ setup:	bcf	CFGS	; point to Flash program memory
 	
 	; ******* Main programme ****************************************
 start:	
-    call volt_display
+	call    volt_display
+	call    move_servo
+	goto    start
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 			   ;;;; SWEEPING SERVO ;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  	

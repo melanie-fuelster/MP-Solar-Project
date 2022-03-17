@@ -1,7 +1,7 @@
 #include <xc.inc>
 
 global delay_x4us, delay_100us, delay_ms, delay_250ns, delay_12us
-global  multiply, multiply_uneven,volt_display
+global  multiply, multiply_uneven,volt_display, sign
 global	ARG1H,ARG2H,ARG1L,ARG2L,L1,H1,M1,ARG2, RES0, RES1, RES2, RES3
 
 extrn	LCD_Write_Hex, LCD_Send_Byte_D
@@ -156,6 +156,11 @@ volt_conv:
 	andwf	diff_reading, W, A
 	movwf	sign, A
 	swapf	sign, f, A	    ; store higher nibble of high byte in sign
+
+	movf	sign, W, A
+	call	LCD_Write_Hex_Dig   ; write sign nibble to display
+	movlw	0x20
+	call	LCD_Send_Byte_D	    ; add a space
 	
 	btfsc	sign, 0, A
 	call	subtraction
@@ -210,7 +215,8 @@ volt_display:
 
 	call	LCD_delay
 	call	LCD_clear
-	goto	volt_display		; NEED TO CHANGE! WILL GET STUCK IN LOOP! --> use timer interrupt ?
+	return
+	;goto	volt_display		; NEED TO CHANGE! WILL GET STUCK IN LOOP! --> use timer interrupt ?
 	
 	
 subtraction:
