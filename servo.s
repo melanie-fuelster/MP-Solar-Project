@@ -16,7 +16,7 @@ Servo_Setup:
 	return
 
 move_servo:
-	btfsc	sign, 0, A
+	btfsc	sign, 0, A	;testing arbitrary (0th) bit
 	call	move_right
 	call	move_left
 	return
@@ -52,7 +52,7 @@ Create_small_Pulse:
 	movwf   pulse_width, A
 	movlw   0x01	
 	movwf   PORTJ, A    ;start of pulse
-	movf   pulse_width, W, A
+	movf	pulse_width, W, A
 	call    delay_12us ;define pulse length
 	movlw   0x00
 	movwf   PORTJ, A    ;end of pulse

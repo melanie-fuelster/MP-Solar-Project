@@ -163,7 +163,7 @@ ADC_load_sign:
 	movlw	11110000B
 	andwf	diff_reading, W, A
 	movwf	sign, A
-	swapf	sign, f, A	    ; store higher nibble of high byte in sign
+	swapf	sign, F, A	    ; store higher nibble of high byte in sign
 	return
 	
 volt_conv:
@@ -171,7 +171,7 @@ volt_conv:
 ;	call	LCD_Write_Hex_Dig   ; write sign nibble to display
 ;	movlw	0x20
 ;	call	LCD_Send_Byte_D	    ; add a space
-	btfsc	sign, 0, A
+	btfsc	sign, 0, A	    ;testing arbitrary (0th) bit
 	call	subtraction
 ;	movf	ARG1H, W, A
 ;	call	LCD_Write_Hex
