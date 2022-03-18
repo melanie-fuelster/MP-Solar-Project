@@ -45,6 +45,7 @@ ADC_Read:
 adc_loop:
 	btfsc   GO	    ; check to see if finished
 	bra	adc_loop
+	
 	return
 	
 end

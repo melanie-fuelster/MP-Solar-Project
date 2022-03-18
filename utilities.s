@@ -1,14 +1,15 @@
 #include <xc.inc>
 
-global delay_x4us, delay_100us, delay_ms, delay_250ns, delay_12us
-global  multiply, multiply_uneven,volt_display, sign
-global	ARG1H,ARG2H,ARG1L,ARG2L,L1,H1,M1,ARG2, RES0, RES1, RES2, RES3
+global	delay_x4us, delay_100us, delay_ms, delay_250ns, delay_12us
+global  volt_display, sign
+global	ARG1L
 
-extrn	LCD_Write_Hex, LCD_Send_Byte_D
-extrn	LCD_clear, LCD_shift, LCD_delay, LCD_Write_Hex_Dig
-extrn	ADC_Read
+extrn	LCD_Write_Hex, LCD_Send_Byte_D, LCD_clear
+extrn	LCD_shift, LCD_delay, LCD_Write_Hex_Dig	    ; external LCD subroutines
+extrn	ADC_Read				    ; external ADC subroutines
     
 psect udata_acs
+ ;reserve 1 byte each for variables used in multiplication
 RES0:	ds  1
 RES1:	ds  1
 RES2:	ds  1
@@ -22,15 +23,15 @@ H1:	ds  1
 M1:	ds  1
 ARG2:	ds 1
     
-cnt_l:	ds 1	; reserve 1 byte for variable cnt_l
-cnt_h:	ds 1	; reserve 1 byte for variable cnt_h
-cnt_ms:	ds 1	; reserve 1 byte for ms counter
-cnt_100us:ds 1	; reserve 1 byte for 100us counter
-cnt_12us:ds 1	; reserve 1 byte for 100us counter
-tmp:	ds 1	; reserve 1 byte for temporary use
+cnt_l:		ds 1	; reserve 1 byte for variable cnt_l
+cnt_h:		ds 1	; reserve 1 byte for variable cnt_h
+cnt_ms:		ds 1	; reserve 1 byte for ms counter
+cnt_100us:	ds 1	; reserve 1 byte for 100us counter
+cnt_12us:	ds 1	; reserve 1 byte for 100us counter
+tmp:		ds 1	; reserve 1 byte for temporary use
 counter:	ds 1	; reserve 1 byte for counting through nessage
-sign:	ds 1	; sign bit from AD differential
-diff_reading: ds 1
+sign:		ds 1	; sign bit from AD differential
+diff_reading:	ds 1
     
     
 psect	utils_code, class=CODE
@@ -141,11 +142,18 @@ multiply_uneven:
 	ADDWFC RES3, F, A ; 
 
 	return
-	
+
+subtraction:
+	movf	ARG1L, W, A
+	sublw	0xff
+	movwf	ARG1L, A
+	movlw	0x00
+	movwf	ARG1H, A
+	return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-			    ;;;; VOLT DIFF CONVERTER ;;;;;;
+			    ;;;; VOLTAGE DIFFERENCE ;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
-volt_conv:
+ADC_load_sign:
 	movff	ADRESL, ARG1L, A    ; low byte of ADC result
 	movff	ADRESH, diff_reading, A    ; high byte of ADC result
 	movlw	00001111B
@@ -156,21 +164,20 @@ volt_conv:
 	andwf	diff_reading, W, A
 	movwf	sign, A
 	swapf	sign, f, A	    ; store higher nibble of high byte in sign
-
-	movf	sign, W, A
-	call	LCD_Write_Hex_Dig   ; write sign nibble to display
-	movlw	0x20
-	call	LCD_Send_Byte_D	    ; add a space
+	return
 	
+volt_conv:
+;	movf	sign, W, A
+;	call	LCD_Write_Hex_Dig   ; write sign nibble to display
+;	movlw	0x20
+;	call	LCD_Send_Byte_D	    ; add a space
 	btfsc	sign, 0, A
 	call	subtraction
-	
-	movf	ARG1H, W, A
-	call	LCD_Write_Hex
- 	movf	ARG1L, W, A
- 	call	LCD_Write_Hex
-	call	LCD_shift
-	
+;	movf	ARG1H, W, A
+;	call	LCD_Write_Hex
+; 	movf	ARG1L, W, A
+; 	call	LCD_Write_Hex
+;	call	LCD_shift
 	movlw	0x41
 	movwf	ARG2H, A	    ; high byte of conversion number
 	movlw	0x8A
@@ -198,34 +205,14 @@ volt_decimals:
 	return
 
 volt_display:
-	call	ADC_Read
-; 	movf	ADRESH, W, A
-;	call	LCD_Write_Hex
-; 	movf	ADRESL, W, A
-; 	call	LCD_Write_Hex
-;	call	LCD_shift
-	call	volt_conv
-	call	LCD_delay
-	call	LCD_delay
-	call	LCD_delay
-	call	LCD_delay
-	call	LCD_delay
-	call	LCD_delay
-	call	LCD_delay
-
-	call	LCD_delay
 	call	LCD_clear
+	call	ADC_Read
+	call	ADC_load_sign
+	call	volt_conv	
 	return
-	;goto	volt_display		; NEED TO CHANGE! WILL GET STUCK IN LOOP! --> use timer interrupt ?
 	
 	
-subtraction:
-	movff	ARG1L, WREG, A
-	sublw	0xff
-	movwf	ARG1L, A
-	movlw	0x00
-	movwf	ARG1H, A
-	return
+
 
 	
 end
