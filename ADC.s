@@ -38,7 +38,7 @@ ADC_diff_setup:
 	movwf   ADCON1,	A   ; 0V for -ve reference and -ve input
 	movlw   0xF6	    ; Right justified output
 	movwf   ADCON2, A   ; Fosc/64 clock and acquisition times
-    
+	return
     
 ADC_Read:
 	bsf	GO	    ; Start conversion by setting GO bit in ADCON0
