@@ -2,7 +2,7 @@
 
 ; ******* import external routines ****************************************
 extrn	LCD_Setup			    ; external LCD subroutines
-extrn	ADC_Setup, ADC_diff_setup	    ; external ADC subroutines
+extrn	ADC_Setup, ADC_diff_setup, ADC_LDR_setup	    ; external ADC subroutines
 extrn	volt_display, delay_250ns, ARG1L    ; external utilities subroutines
 extrn   Servo_Setup, move_servo		    ; external servo subroutines
 
@@ -15,7 +15,8 @@ rst: 	org 0x0
 setup:
 	call	LCD_Setup	; setup LCD
 	;call	ADC_Setup	; setup ADC
-	call	ADC_diff_setup	; setup ADC for differential input
+;	call	ADC_diff_setup	; setup ADC for differential input
+	call	ADC_LDR_setup	; setup ADC for differential input from LDRs (eventually)
 	call	Servo_Setup	; setup servo motors
 	goto	start
 

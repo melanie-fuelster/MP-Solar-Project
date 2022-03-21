@@ -1,6 +1,6 @@
 #include <xc.inc>
 
-global  ADC_Setup, ADC_Read, ADC_diff_setup
+global  ADC_Setup, ADC_Read, ADC_diff_setup, ADC_LDR_setup
    
 psect	adc_code, class=CODE
     
@@ -40,6 +40,27 @@ ADC_diff_setup:
 	movwf   ADCON2, A   ; Fosc/64 clock and acquisition times
 	return
     
+	
+ADC_LDR_setup:
+    	bsf	TRISA, PORTA_RA2_POSN, A  ; pin RA0==AN0 input
+	movlb	0x0f
+	bsf	ANSEL2	    ; set AN2 to analog
+	
+	bsf	TRISA, PORTA_RA3_POSN, A  ; pin RA1==AN1 input
+	movlb	0x0f
+	bsf	ANSEL3	    ; set AN3 to analog
+	
+	movlb	0x00
+	movlw   00001001B	    ; select AN2 for measurement
+	movwf   ADCON0, A   ; and turn ADC on
+	
+	movlw	00110100B   ; selects  AN3 as negatove input
+	movwf   ADCON1,	A   ; 0V for -ve reference and -ve input
+	movlw   0xF6	    ; Right justified output
+	movwf   ADCON2, A   ; Fosc/64 clock and acquisition times
+	;return
+	
+	
 ADC_Read:
 	bsf	GO	    ; Start conversion by setting GO bit in ADCON0
 adc_loop:
