@@ -1,6 +1,6 @@
 #include <xc.inc>
 
-global  Servo_Setup, Create_Pulse, Create_small_Pulse, move_servo
+global  Servo_Setup, Create_Pulse, Create_small_Pulse, move_servo, move_servo2
     
 extrn	delay_100us, delay_ms, delay_12us, sign	    ; external utilities subroutines
     
@@ -11,8 +11,10 @@ psect	servo_code, class=CODE
     
 Servo_Setup:
 ;   defining Port J as output (ie, pulse for Servo will arrive here)
+;    	movlw	0x0
+;	movwf	TRISJ, A
     	movlw	0x0
-	movwf	TRISJ, A
+	movwf	TRISH, A
 	return
 
 move_servo:
@@ -33,13 +35,39 @@ move_left:
 	
 Create_Pulse:
 	movwf   pulse_width, A
-	movlw   0x01	
-	movwf   PORTJ, A	    ;start of pulse
+	movlw   0x01		    ;send pulse to pin RH0
+	movwf   PORTH, A	    ;start of pulse
 	movf	pulse_width, W, A
 	call    delay_100us	    ;define pulse length
 	movlw   0x00
-	movwf   PORTJ, A	    ;end of pulse
-return
+	movwf   PORTH, A	    ;end of pulse
+	return
+	
+
+	
+move_servo2:
+	btfsc	sign, 0, A	;testing arbitrary (0th) bit
+	call	move_right2
+	call	move_left2
+	return
+	
+move_right2:			;solar servo needs to fight the wires in this direction so we need it to move faster
+	movlw	0x20		;3.2 ms pulse
+	call	Create_Pulse2
+	return	
+move_left2:
+	movlw	0x0e		;1.4 ms pulse
+	call	Create_Pulse2
+	return	
+Create_Pulse2:			    ;for servo attached to panels
+	movwf   pulse_width, A
+	movlw   0x02		    ;send pulse to pin RJ1
+	movwf   PORTH, A	    ;start of pulse
+	movf	pulse_width, W, A
+	call    delay_100us	    ;define pulse length
+	movlw   0x00
+	movwf   PORTH, A	    ;end of pulse
+	return
 
 	
 	
