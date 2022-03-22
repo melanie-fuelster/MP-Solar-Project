@@ -166,40 +166,40 @@ ADC_load_sign:
 	swapf	sign, F, A	    ; store higher nibble of high byte in sign
 	return
 	
-volt_conv:
-	btfsc	sign, 0, A	    ;testing arbitrary (0th) bit
-	call	subtraction
-	movlw	0x41
-	movwf	ARG2H, A	    ; high byte of conversion number
-	movlw	0x8A
-	movwf	ARG2L, A	    ; low byte of conversion number
-	call	multiply	    ; result will be in RES0-3
-	movf	RES3, W, A	    ;print highest non-zero nibble
-	call	LCD_Write_Hex_Dig
-	movlw	0x2E
-	call	LCD_Send_Byte_D
-	call	volt_decimals
-	call	volt_decimals
-	call	volt_decimals
-	movlw	0x56
-	call	LCD_Send_Byte_D
-	return
-volt_decimals:
-	movff	RES2, H1, A
-	movff	RES1, M1, A
-	movff	RES0, L1, A
-	movlw	0x0A
-	movwf	ARG2, A
-	call	multiply_uneven
-	movf	RES3, W, A	    ;print highest non-zero nibble
-	call	LCD_Write_Hex_Dig
-	return
+;volt_conv:
+;	btfsc	sign, 0, A	    ;testing arbitrary (0th) bit
+;	call	subtraction
+;	movlw	0x41
+;	movwf	ARG2H, A	    ; high byte of conversion number
+;	movlw	0x8A
+;	movwf	ARG2L, A	    ; low byte of conversion number
+;	call	multiply	    ; result will be in RES0-3
+;	movf	RES3, W, A	    ;print highest non-zero nibble
+;	call	LCD_Write_Hex_Dig
+;	movlw	0x2E
+;	call	LCD_Send_Byte_D
+;	call	volt_decimals
+;	call	volt_decimals
+;	call	volt_decimals
+;	movlw	0x56
+;	call	LCD_Send_Byte_D
+;	return
+;volt_decimals:
+;	movff	RES2, H1, A
+;	movff	RES1, M1, A
+;	movff	RES0, L1, A
+;	movlw	0x0A
+;	movwf	ARG2, A
+;	call	multiply_uneven
+;	movf	RES3, W, A	    ;print highest non-zero nibble
+;	call	LCD_Write_Hex_Dig
+;	return
 
 volt_display:
-	call	LCD_clear
+;	call	LCD_clear
 	call	ADC_Read
 	call	ADC_load_sign
-	call	volt_conv	
+;	call	volt_conv	
 	return
 	
 	

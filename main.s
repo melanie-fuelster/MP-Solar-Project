@@ -23,20 +23,20 @@ setup:
 	
 	; ******* Main programme ****************************************
 start:	
-	call	ADC_diff_setup	; setup ADC for differential input
-	call    volt_display	; measures voltage difference and displays it on LCD
-	movlw	0x04		; (0.004V threshold)
-	cpfslt	ARG1L, A	; check if solar array is facing light source
-	call    move_servo
-	call	delay_250ns
-;	call	delay_250ns
+;	call	ADC_diff_setup	; setup ADC for differential input
+;	call    volt_display	; measures voltage difference and displays it on LCD
+;	movlw	0x10		; (0.01V threshold)
+;	cpfslt	ARG1L, A	; check if solar array is facing light source
+;	call    move_servo
+;;	call	delay_250ns
+;;	call	delay_250ns
 ;	
 	call	ADC_LDR_setup	; setup ADC for differential input
 	call    volt_display	; measures voltage difference and displays it on LCD
-	movlw	0x04		; (0.004V threshold)
+	movlw	0x0f		; (0.01V threshold)
 	cpfslt	ARG1L, A	; check if solar array is facing light source
 	call    move_servo2
-	call	delay_250ns
+;	call	delay_250ns
 ;	call	delay_250ns
 	goto    start
 
