@@ -167,17 +167,8 @@ ADC_load_sign:
 	return
 	
 volt_conv:
-;	movf	sign, W, A
-;	call	LCD_Write_Hex_Dig   ; write sign nibble to display
-;	movlw	0x20
-;	call	LCD_Send_Byte_D	    ; add a space
 	btfsc	sign, 0, A	    ;testing arbitrary (0th) bit
 	call	subtraction
-;	movf	ARG1H, W, A
-;	call	LCD_Write_Hex
-; 	movf	ARG1L, W, A
-; 	call	LCD_Write_Hex
-;	call	LCD_shift
 	movlw	0x41
 	movwf	ARG2H, A	    ; high byte of conversion number
 	movlw	0x8A
