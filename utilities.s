@@ -1,7 +1,7 @@
 #include <xc.inc>
 
 global	delay_x4us, delay_100us, delay_ms, delay_250ns, delay_12us
-global  volt_display, sign
+global  volt_display, sign;, LCD_display_volt
 global	ARG1L
 
 extrn	LCD_Write_Hex, LCD_Send_Byte_D, LCD_clear
@@ -166,8 +166,16 @@ ADC_load_sign:
 	swapf	sign, F, A	    ; store higher nibble of high byte in sign
 	return
 	
+;LCD_display_volt:  
+;	btfss	TMR0IF
+;	retfie	F
+;	call	LCD_clear
+;	call	volt_conv
+;	bcf	TMR0IF
+;	retfie	F
+;	
 ;volt_conv:
-;	btfsc	sign, 0, A	    ;testing arbitrary (0th) bit
+;    	btfsc	sign, 0, A	    ;testing arbitrary (0th) bit
 ;	call	subtraction
 ;	movlw	0x41
 ;	movwf	ARG2H, A	    ; high byte of conversion number
@@ -184,6 +192,7 @@ ADC_load_sign:
 ;	movlw	0x56
 ;	call	LCD_Send_Byte_D
 ;	return
+;	
 ;volt_decimals:
 ;	movff	RES2, H1, A
 ;	movff	RES1, M1, A
@@ -196,10 +205,9 @@ ADC_load_sign:
 ;	return
 
 volt_display:
-;	call	LCD_clear
+
 	call	ADC_Read
-	call	ADC_load_sign
-;	call	volt_conv	
+	call	ADC_load_sign	
 	return
 	
 	
