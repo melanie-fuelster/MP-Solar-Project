@@ -26,10 +26,6 @@ ADC_diff_setup:
 	movlb	0x0f
 	bsf	ANSEL1	    ; set AN1 to analog
 	
-;	bsf	TRISF, PORTF_RF0_POSN, A  ; pin RF0==AN1 input
-;	movlb	0x0f
-;	bsf	ANSEL1	    ; set AN1 to analog
-	
 	movlb	0x00
 	movlw   0x01	    ; select AN0 for measurement
 	movwf   ADCON0, A   ; and turn ADC on
@@ -58,7 +54,7 @@ ADC_LDR_setup:
 	movwf   ADCON1,	A   ; 0V for -ve reference and -ve input
 	movlw   0xF6	    ; Right justified output
 	movwf   ADCON2, A   ; Fosc/64 clock and acquisition times
-	;return
+	return
 	
 	
 ADC_Read:

@@ -21,6 +21,8 @@ move_servo:
 	btfsc	sign, 0, A	;testing arbitrary (0th) bit
 	call	move_right
 	call	move_left
+	movlw	0x04
+	call	delay_ms
 	return
 	
 ;centre pulse width is 1.46 ms --> the closer to centre, the slower the servo
@@ -49,6 +51,8 @@ move_servo2:
 	btfsc	sign, 0, A	;testing arbitrary (0th) bit
 	call	move_right2
 	call	move_left2
+	movlw	0x04
+	call	delay_ms
 	return
 	
 move_right2:			;solar servo needs to fight the wires in this direction so we need it to move faster
