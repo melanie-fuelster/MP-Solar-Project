@@ -10,9 +10,7 @@ pulse_width:    ds 1
 psect	servo_code, class=CODE
     
 Servo_Setup:
-;   defining Port J as output (ie, pulse for Servo will arrive here)
-;    	movlw	0x0
-;	movwf	TRISJ, A
+;   defining Port H as output (ie, pulse for Servo will arrive here)
     	movlw	0x0
 	movwf	TRISH, A
 	return
@@ -21,11 +19,13 @@ move_servo:
 	btfsc	sign, 0, A	;testing arbitrary (0th) bit
 	call	move_right
 	call	move_left
+	movlw	0x01
+	call	delay_ms
 	return
 	
 ;centre pulse width is 1.46 ms --> the closer to centre, the slower the servo
 move_right:
-	movlw	0x28		;4 ms pulse
+	movlw	0x29		;4 ms pulse
 	call	Create_Pulse
 	return
 move_left:
@@ -49,14 +49,16 @@ move_servo2:
 	btfsc	sign, 0, A	;testing arbitrary (0th) bit
 	call	move_right2
 	call	move_left2
+	movlw	0x05
+	call	delay_ms
 	return
 	
 move_right2:			;solar servo needs to fight the wires in this direction so we need it to move faster
-	movlw	0x20		;3.2 ms pulse
+	movlw	0x1a		;3.2 ms pulse
 	call	Create_Pulse2
 	return	
 move_left2:
-	movlw	0x0e		;1.4 ms pulse
+	movlw	0x0d		;1.4 ms pulse   ;worst case go back to 0x0e here
 	call	Create_Pulse2
 	return	
 Create_Pulse2:			    ;for servo attached to panels

@@ -19,6 +19,7 @@
       <itemPath>ADC.s</itemPath>
       <itemPath>servo.s</itemPath>
       <itemPath>utilities.s</itemPath>
+      <itemPath>timer.s</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

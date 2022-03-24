@@ -1,7 +1,7 @@
 #include <xc.inc>
 
 global	delay_x4us, delay_100us, delay_ms, delay_250ns, delay_12us
-global  volt_display, sign
+global  volt_display, sign, volt_conv
 global	ARG1L
 
 extrn	LCD_Write_Hex, LCD_Send_Byte_D, LCD_clear
@@ -167,6 +167,7 @@ ADC_load_sign:
 	return
 	
 volt_conv:
+	call	LCD_clear
 	btfsc	sign, 0, A	    ;testing arbitrary (0th) bit
 	call	subtraction
 	movlw	0x41
@@ -196,10 +197,10 @@ volt_decimals:
 	return
 
 volt_display:
-	call	LCD_clear
+;	call	LCD_clear
 	call	ADC_Read
 	call	ADC_load_sign
-	call	volt_conv	
+;	call	volt_conv	
 	return
 	
 	
